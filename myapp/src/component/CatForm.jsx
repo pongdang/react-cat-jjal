@@ -26,7 +26,7 @@ export default function CatForm({ updateMainCat }) {
       return;
     }
 
-    updateMainCat();
+    updateMainCat(value);
   }
   return (
     <form onSubmit={handleFormSubmit}>

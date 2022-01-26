@@ -14,17 +14,26 @@ const jsonLocalStorage = {
   },
 };
 
+const fetchCat = async (text) => {
+  const OPEN_API_DOMAIN = "https://cataas.com";
+  const response = await fetch(`${OPEN_API_DOMAIN}/cat/says/${text}?json=true`);
+  const responseJson = await response.json();
+  return `${OPEN_API_DOMAIN}/${responseJson.url}`;
+};
+
 function App() {
   const CAT1 = "https://cataas.com/cat/60b73094e04e18001194a309/says/react";
-  const CAT2 = "https://cataas.com//cat/5e9970351b7a400011744233/says/inflearn";
-  const CAT3 = "https://cataas.com/cat/595f280b557291a9750ebf65/says/JavaScript";
+  // const CAT2 = "https://cataas.com//cat/5e9970351b7a400011744233/says/inflearn";
+  // const CAT3 = "https://cataas.com/cat/595f280b557291a9750ebf65/says/JavaScript";
 
-  const [counter, setCounter] = React.useState(jsonLocalStorage.getItem("counter"));
-  const [mainCatImg, setMainCatImg] = React.useState(CAT1);
-  const [favorites, setFavorites] = React.useState(jsonLocalStorage.getItem("favorites") || []);
+  const [counter, setCounter] = useState(jsonLocalStorage.getItem("counter"));
+  const [mainCatImg, setMainCatImg] = useState(CAT1);
+  const [favorites, setFavorites] = useState(jsonLocalStorage.getItem("favorites") || []);
 
-  function updateMainCat() {
-    setMainCatImg(CAT2);
+  async function updateMainCat(value) {
+    const newCat = await fetchCat(value);
+
+    setMainCatImg(newCat);
     const nextCounter = counter + 1;
     setCounter(nextCounter);
     jsonLocalStorage.setItem("counter", nextCounter);
