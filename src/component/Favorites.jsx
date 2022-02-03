@@ -2,6 +2,10 @@ import React from "react";
 import CatItem from "./CatItem";
 
 export default function Favorites({ favorites }) {
+  // 조건부 렌더링
+  if (favorites.length === 0) {
+    return <div>사진 위 하트를 눌러 고양이 사진을 저장해봐요!</div>;
+  }
   return (
     <ul className='favorites'>
       {favorites.map((cat) => (
