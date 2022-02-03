@@ -4,6 +4,7 @@ import CatForm from "./component/CatForm";
 import Favorites from "./component/Favorites";
 import MainCard from "./component/MainCard";
 import Title from "./component/Title";
+import { useEffect } from "react/cjs/react.development";
 
 const jsonLocalStorage = {
   setItem: (key, value) => {
@@ -26,17 +27,37 @@ function App() {
   // const CAT2 = "https://cataas.com//cat/5e9970351b7a400011744233/says/inflearn";
   // const CAT3 = "https://cataas.com/cat/595f280b557291a9750ebf65/says/JavaScript";
 
-  const [counter, setCounter] = useState(jsonLocalStorage.getItem("counter"));
+  const [counter, setCounter] = useState(() => {
+    return jsonLocalStorage.getItem("counter");
+  });
+
   const [mainCatImg, setMainCatImg] = useState(CAT1);
-  const [favorites, setFavorites] = useState(jsonLocalStorage.getItem("favorites") || []);
+
+  const [favorites, setFavorites] = useState(() => {
+    return jsonLocalStorage.getItem("favorites") || [];
+  });
+
+  // 앱 진입시 API를 불러 첫번째 고양이 이미지를 API의 고양이 사진으로 바꾸어주기
+  async function setInitialCat() {
+    const newCat = await fetchCat("First cat");
+    console.log(newCat);
+    setMainCatImg(newCat);
+  }
+
+  useEffect(() => {
+    setInitialCat();
+  }, []);
 
   async function updateMainCat(value) {
     const newCat = await fetchCat(value);
 
     setMainCatImg(newCat);
-    const nextCounter = counter + 1;
-    setCounter(nextCounter);
-    jsonLocalStorage.setItem("counter", nextCounter);
+
+    setCounter((prev) => {
+      const nextCounter = prev + 1;
+      jsonLocalStorage.setItem("counter", nextCounter);
+      return nextCounter;
+    });
   }
 
   function handleHeartClick() {
@@ -45,11 +66,15 @@ function App() {
     setFavorites(nextFavorites);
     jsonLocalStorage.setItem("favorites", nextFavorites);
   }
+
+  const alreadyFavorite = favorites.includes(mainCatImg);
+
+  const counterTitle = counter === null ? " " : counter + "번째";
   return (
     <div className='App'>
-      <Title>{counter}번째 고양이 가라사대</Title>
+      <Title>{counterTitle} 고양이 가라사대</Title>
       <CatForm updateMainCat={updateMainCat} />
-      <MainCard img={mainCatImg} onHeartClick={handleHeartClick} />
+      <MainCard img={mainCatImg} onHeartClick={handleHeartClick} alreadyFavorite={alreadyFavorite} />
       <Favorites favorites={favorites} />
     </div>
   );
